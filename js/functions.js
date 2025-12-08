@@ -15,7 +15,7 @@ function isPalindrome(string) {
   return cleanString === cleanString.split('').reverse().join('');
 }
 
-// Строка является палиндромом
+// Строка является палиндромом.
 isPalindrome('топот'); // true
 // Несмотря на разный регистр, тоже палиндром
 isPalindrome('ДовОд'); // true

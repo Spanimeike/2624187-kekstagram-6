@@ -23,6 +23,7 @@ isPalindrome('ДовОд'); // true
 isPalindrome('Кекс');  // false
 // Это палиндром
 isPalindrome('Лёша на полке клопа нашёл '); // true
+isPalindrome('От топота копыт, пыль по полю летит')
 
 
 /**

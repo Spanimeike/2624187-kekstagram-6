@@ -1,32 +1,26 @@
-import { getRandomNumber, getRandomItem } from './util.js';
-import { MESSAGES, NAMES } from './data.js';
+import { getRandomInt, generateUniqueIds } from './utils.js';
+import { DESCRIPTIONS, NAMES } from './data.js';
 
-const usedCommentIds = new Set();
-
-function createUniqueCommentId() {
-  let newId;
-  do {
-    newId = getRandomNumber(1000, 9999);
-  } while (usedCommentIds.has(newId));
-
-  usedCommentIds.add(newId);
-  return newId;
-}
-
-function createComment() {
-  const messageCount = getRandomNumber(1, 2);
-  let messageText = '';
-
-  for (let i = 0; i < messageCount; i++) {
-    messageText += getRandomItem(MESSAGES) + ' ';
+/**
+ * Генерирует массив комментариев
+ * @param {number} count - количество комментариев для генерации
+ * @returns {Array} массив объектов комментариев
+ */
+export function generateComments(count) {
+  const comments = [];
+  const commentIds = generateUniqueIds(count, 1, 1000);
+  for (let i = 0; i < count; i++) {
+    const messageCount = getRandomInt(1, 2);
+    let message = '';
+    for (let j = 0; j < messageCount; j++) {
+      message += `${DESCRIPTIONS[getRandomInt(0, DESCRIPTIONS.length - 1)]  } `;
+    }
+    comments.push({
+      id: commentIds[i],
+      avatar: `img/avatar-${getRandomInt(1, 6)}.svg`,
+      message: message.trim(),
+      name: NAMES[getRandomInt(0, NAMES.length - 1)]
+    });
   }
-
-  return {
-    id: createUniqueCommentId(),
-    avatar: 'img/avatar-' + getRandomNumber(1, 6) + '.svg',
-    message: messageText.trim(),
-    name: getRandomItem(NAMES)
-  };
+  return comments;
 }
-
-export { createComment };

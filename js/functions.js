@@ -17,7 +17,7 @@ function isMeetingWithinWorkingHours(startWorkDay, endWorkDay, startMeeting, mee
     return hours * 60 + minutes;
   }
 
-  // Конвертируем все времена в минуты
+  // Конвертируем все время в минуты
   const startWorkMinutes = timeToMinutes(startWorkDay);
   const endWorkMinutes = timeToMinutes(endWorkDay);
   const startMeetingMinutes = timeToMinutes(startMeeting);

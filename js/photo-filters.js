@@ -30,3 +30,36 @@ const getFilteredPhotos = () => {
       return [...photosCollection];
   }
 };
+
+const updateActiveFilterButton = (clickedBtn) => {
+  const currentActiveBtn = filtersForm.querySelector('.img-filters__button--active');
+  if (currentActiveBtn) {
+    currentActiveBtn.classList.remove('img-filters__button--active');
+  }
+  clickedBtn.classList.add('img-filters__button--active');
+};
+
+const delayedRender = debounce((filteredPhotos) => {
+  renderThumbnails(filteredPhotos);
+}, FILTER_DELAY);
+
+const handleFilterClick = (evt) => {
+  const clickedBtn = evt.target;
+  if (!clickedBtn.classList.contains('img-filters__button')) {
+    return;
+  }
+
+  if (clickedBtn.id === activeFilter) {
+    return;
+  }
+
+  activeFilter = clickedBtn.id;
+  updateActiveFilterButton(clickedBtn);
+  delayedRender(getFilteredPhotos());
+};
+
+export const initFilters = (loadedPhotos) => {
+  photosCollection = loadedPhotos;
+  filtersSection.classList.remove('img-filters--inactive');
+  filtersForm.addEventListener('click', handleFilterClick);
+};

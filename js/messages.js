@@ -1,45 +1,45 @@
-import { isEscapeKey } from './utils.js';
+import { isEscapeKey } from './util.js';
 
-const successTemplate = document.querySelector('#success').content.querySelector('.success');
-const errorTemplate = document.querySelector('#error').content.querySelector('.error');
+const successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
+const errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
 
-const showMessage = (template, buttonClass) => {
+const displayMessage = (template, buttonSelector) => {
   const messageElement = template.cloneNode(true);
-  const button = messageElement.querySelector(buttonClass);
+  const closeButton = messageElement.querySelector(buttonSelector);
 
   document.body.append(messageElement);
 
-  const closeMessage = () => {
+  const removeMessage = () => {
     messageElement.remove();
-    document.removeEventListener('keydown', onMessageEscKeydown);
-    document.removeEventListener('click', onOutsideClick);
+    document.removeEventListener('keydown', handleMessageEscKeydown);
+    document.removeEventListener('click', handleOutsideClick);
   };
 
-  function onMessageEscKeydown(evt) {
+  function handleMessageEscKeydown(evt) {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
       evt.stopPropagation();
-      closeMessage();
+      removeMessage();
     }
   }
 
-  function onOutsideClick(evt) {
+  function handleOutsideClick(evt) {
     if (evt.target === messageElement) {
-      closeMessage();
+      removeMessage();
     }
   }
 
-  button.addEventListener('click', closeMessage);
-  document.addEventListener('keydown', onMessageEscKeydown);
-  document.addEventListener('click', onOutsideClick);
+  closeButton.addEventListener('click', removeMessage);
+  document.addEventListener('keydown', handleMessageEscKeydown);
+  document.addEventListener('click', handleOutsideClick);
 };
 
 const showSuccessMessage = () => {
-  showMessage(successTemplate, '.success__button');
+  displayMessage(successMessageTemplate, '.success__button');
 };
 
 const showErrorMessage = () => {
-  showMessage(errorTemplate, '.error__button');
+  displayMessage(errorMessageTemplate, '.error__button');
 };
 
 export { showSuccessMessage, showErrorMessage };

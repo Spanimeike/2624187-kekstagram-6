@@ -1,7 +1,7 @@
-const SERVER_URL = 'https://29.javascript.htmlacademy.pro/kekstagram';
+const API_URL = 'https://29.javascript.htmlacademy.pro/kekstagram';
 
-const getData = (onSuccess, onFail) => {
-  fetch(`${SERVER_URL}/data`)
+const getData = (successCallback, errorCallback) => {
+  fetch(`${API_URL}/data`)
     .then((response) => {
       if (response.ok) {
         return response.json();
@@ -9,27 +9,27 @@ const getData = (onSuccess, onFail) => {
       throw new Error(`${response.status} ${response.statusText}`);
     })
     .then((data) => {
-      onSuccess(data);
+      successCallback(data);
     })
     .catch(() => {
-      onFail();
+      errorCallback();
     });
 };
 
-const sendData = (onSuccess, onFail, body) => {
-  fetch(`${SERVER_URL}/`, {
+const sendData = (successCallback, errorCallback, formBody) => {
+  fetch(`${API_URL}/`, {
     method: 'POST',
-    body,
+    body: formBody,
   })
     .then((response) => {
       if (response.ok) {
-        onSuccess();
+        successCallback();
       } else {
-        onFail();
+        errorCallback();
       }
     })
     .catch(() => {
-      onFail();
+      errorCallback();
     });
 };
 

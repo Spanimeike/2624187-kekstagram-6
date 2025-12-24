@@ -1,174 +1,128 @@
-/**
- * Модуль для работы с полноразмерным режимом просмотра изображений
- */
+import { isPhotoLiked, togglePhotoLike } from './favorites.js';
 
-import { isPhotoLiked, togglePhotoLike } from './liked-state.js';
+const fullscreenView = document.querySelector('.big-picture');
+const pageBody = document.querySelector('body');
+const closeButtonElement = fullscreenView.querySelector('.big-picture__cancel');
+const commentCounter = fullscreenView.querySelector('.social__comment-count');
+const loadMoreButton = fullscreenView.querySelector('.comments-loader');
+const commentsList = fullscreenView.querySelector('.social__comments');
+const fullscreenImage = fullscreenView.querySelector('.big-picture__img img');
+const likesCounter = fullscreenView.querySelector('.likes-count');
+const imageDescription = fullscreenView.querySelector('.social__caption');
+const likesButton = fullscreenView.querySelector('.social__likes');
 
-const bigPictureElement = document.querySelector('.big-picture');
-const bodyElement = document.querySelector('body');
-const cancelButton = bigPictureElement.querySelector('.big-picture__cancel');
-const commentCountElement = bigPictureElement.querySelector('.social__comment-count');
-const commentsLoaderElement = bigPictureElement.querySelector('.comments-loader');
-const commentsContainer = bigPictureElement.querySelector('.social__comments');
-const bigPictureImg = bigPictureElement.querySelector('.big-picture__img img');
-const likesCount = bigPictureElement.querySelector('.likes-count');
-const socialCaption = bigPictureElement.querySelector('.social__caption');
-const socialLikes = bigPictureElement.querySelector('.social__likes');
+const COMMENTS_BATCH_SIZE = 5;
 
-// Количество комментариев, отображаемых за один раз
-const COMMENTS_PER_PORTION = 5;
+let currentCommentsList = [];
+let displayedCommentsCount = 0;
+let currentPhotoData = null;
 
-// Храним текущие данные для работы с комментариями
-let currentComments = [];
-let displayedComments = 0;
-let currentPhoto = null;
+function createCommentElement(commentData) {
+  const commentItem = document.createElement('li');
+  commentItem.classList.add('social__comment');
 
-/**
- * Создает DOM-элемент комментария
- * @param {Object} comment - объект с данными комментария
- * @returns {HTMLElement} - DOM-элемент комментария
- */
-function createCommentElement(comment) {
-  const commentElement = document.createElement('li');
-  commentElement.classList.add('social__comment');
+  const avatarImage = document.createElement('img');
+  avatarImage.classList.add('social__picture');
+  avatarImage.src = commentData.avatar;
+  avatarImage.alt = commentData.name;
+  avatarImage.height = 35;
+  avatarImage.width = 35;
 
-  const avatar = document.createElement('img');
-  avatar.classList.add('social__picture');
-  avatar.src = comment.avatar;
-  avatar.alt = comment.name;
-  avatar.width = 35;
-  avatar.height = 35;
+  const commentText = document.createElement('p');
+  commentText.classList.add('social__text');
+  commentText.textContent = commentData.message;
 
-  const text = document.createElement('p');
-  text.classList.add('social__text');
-  text.textContent = comment.message;
+  commentItem.appendChild(avatarImage);
+  commentItem.appendChild(commentText);
 
-  commentElement.appendChild(avatar);
-  commentElement.appendChild(text);
-
-  return commentElement;
+  return commentItem;
 }
 
-/**
- * Отрисовывает порцию комментариев к фотографии
- * @param {boolean} initial - флаг начальной загрузки (если true, контейнер очищается)
- */
-function renderCommentsPortion(initial = false) {
-  if (initial) {
-    commentsContainer.innerHTML = '';
-    displayedComments = 0;
+function renderCommentsBatch(initialLoad = false) {
+  if (initialLoad) {
+    commentsList.innerHTML = '';
+    displayedCommentsCount = 0;
   }
 
   const fragment = document.createDocumentFragment();
-  const commentsToShow = Math.min(displayedComments + COMMENTS_PER_PORTION, currentComments.length);
+  const commentsToDisplay = Math.min(displayedCommentsCount + COMMENTS_BATCH_SIZE, currentCommentsList.length);
 
-  // Отображаем следующую порцию комментариев
-  for (let i = displayedComments; i < commentsToShow; i++) {
-    const commentElement = createCommentElement(currentComments[i]);
+  for (let i = displayedCommentsCount; i < commentsToDisplay; i++) {
+    const commentElement = createCommentElement(currentCommentsList[i]);
     fragment.appendChild(commentElement);
   }
 
-  commentsContainer.appendChild(fragment);
-  displayedComments = commentsToShow;
+  commentsList.appendChild(fragment);
+  displayedCommentsCount = commentsToDisplay;
 
-  // Обновляем счетчик комментариев
-  commentCountElement.innerHTML = `<span class="social__comment-shown-count">${displayedComments}</span> из <span class="social__comment-total-count">${currentComments.length}</span> комментариев`;
+  commentCounter.innerHTML = `<span class="social__comment-shown-count">${displayedCommentsCount}</span> из <span class="social__comment-total-count">${currentCommentsList.length}</span> комментариев`;
 
-  // Скрываем кнопку загрузки, если все комментарии загружены
-  if (displayedComments >= currentComments.length) {
-    commentsLoaderElement.classList.add('hidden');
+  if (displayedCommentsCount >= currentCommentsList.length) {
+    loadMoreButton.classList.add('hidden');
   } else {
-    commentsLoaderElement.classList.remove('hidden');
+    loadMoreButton.classList.remove('hidden');
   }
 }
 
-/**
- * Обработчик клика по кнопке лайка
- */
-function onLikeClick() {
-  if (!currentPhoto) {
+function handleLikeClick() {
+  if (!currentPhotoData) {
     return;
   }
 
-  // Переключаем состояние лайка и сохраняем в хранилище
-  const isLiked = togglePhotoLike(currentPhoto.id);
+  const liked = togglePhotoLike(currentPhotoData.id);
 
-  // Обновляем отображение состояния лайка
-  socialLikes.classList.toggle('social__likes--active', isLiked);
+  likesButton.classList.toggle('social__likes--active', liked);
 
-  // Увеличиваем или уменьшаем количество лайков в зависимости от состояния
-  if (isLiked) {
-    currentPhoto.likes += 1;
+  if (liked) {
+    currentPhotoData.likes += 1;
   } else {
-    currentPhoto.likes -= 1;
+    currentPhotoData.likes -= 1;
   }
 
-  // Обновляем отображение количества лайков
-  likesCount.textContent = currentPhoto.likes;
+  likesCounter.textContent = currentPhotoData.likes;
 }
 
-/**
- * Показывает полноразмерное изображение
- * @param {Object} photo - объект с данными фотографии
- */
-function showBigPicture(photo) {
-  currentPhoto = photo;
+function showBigPicture(photoInfo) {
+  currentPhotoData = photoInfo;
 
-  // Заполняем данные фотографии
-  bigPictureImg.src = photo.url;
-  likesCount.textContent = photo.likes;
-  socialCaption.textContent = photo.description;
+  fullscreenImage.src = photoInfo.url;
+  likesCounter.textContent = photoInfo.likes;
+  imageDescription.textContent = photoInfo.description;
 
-  // Сохраняем комментарии для пошаговой загрузки
-  currentComments = photo.comments.slice();
+  currentCommentsList = photoInfo.comments.slice();
 
-  // Показываем первую порцию комментариев
-  renderCommentsPortion(true);
+  renderCommentsBatch(true);
 
-  // Показываем блоки счётчика комментариев
-  commentCountElement.classList.remove('hidden');
+  commentCounter.classList.remove('hidden');
 
-  // Устанавливаем состояние лайка из хранилища
-  const isLiked = isPhotoLiked(photo.id);
-  socialLikes.classList.toggle('social__likes--active', isLiked);
+  const liked = isPhotoLiked(photoInfo.id);
+  likesButton.classList.toggle('social__likes--active', liked);
 
-  // Отображаем окно с полноразмерным изображением
-  bigPictureElement.classList.remove('hidden');
-  bodyElement.classList.add('modal-open');
+  fullscreenView.classList.remove('hidden');
+  pageBody.classList.add('modal-open');
 
-  // Добавляем обработчики событий
-  document.addEventListener('keydown', onEscKeyDown);
+  document.addEventListener('keydown', handleEscKeyPress);
 }
 
-/**
- * Закрывает полноразмерное изображение
- */
 function closeBigPicture() {
-  bigPictureElement.classList.add('hidden');
-  bodyElement.classList.remove('modal-open');
+  fullscreenView.classList.add('hidden');
+  pageBody.classList.remove('modal-open');
 
-  // Удаляем обработчики событий
-  document.removeEventListener('keydown', onEscKeyDown);
+  document.removeEventListener('keydown', handleEscKeyPress);
 
-  // Сбрасываем данные
-  currentPhoto = null;
-  currentComments = [];
-  displayedComments = 0;
+  currentPhotoData = null;
+  currentCommentsList = [];
+  displayedCommentsCount = 0;
 }
 
-/**
- * Обработчик нажатия клавиши Esc
- * @param {KeyboardEvent} evt - объект события
- */
-function onEscKeyDown(evt) {
+function handleEscKeyPress(evt) {
   if (evt.key === 'Escape') {
     closeBigPicture();
   }
 }
 
-// Инициализируем обработчики событий, которые не зависят от конкретной фотографии
-cancelButton.addEventListener('click', closeBigPicture);
-commentsLoaderElement.addEventListener('click', () => renderCommentsPortion());
-socialLikes.addEventListener('click', onLikeClick);
+closeButtonElement.addEventListener('click', closeBigPicture);
+loadMoreButton.addEventListener('click', () => renderCommentsBatch());
+likesButton.addEventListener('click', handleLikeClick);
 
 export { showBigPicture };

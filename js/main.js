@@ -1,43 +1,32 @@
 import { initImageUploadForm } from './form.js';
-import { renderThumbnails } from './gallery.js';
+import { renderThumbnails } from './thumbnails.js';
 import { getData } from './api.js';
-import { showAlert } from './utils.js';
-import { initFilters } from './filters.js';
+import { showAlert } from './util.js';
+import { initFilters } from './photo-filters.js';
 
-/**
- * Функция для проверки загрузки зависимостей и инициализации приложения
- */
-function initializeApp() {
-  // Проверяем, загрузились ли библиотеки
-  // Если Pristine загрузился, то считаем что все ок
+function initializeApplication() {
   if (typeof window.Pristine !== 'function') {
-    // Если библиотеки не загружены, пробуем через 100мс
-    setTimeout(initializeApp, 100);
+    setTimeout(initializeApplication, 100);
     return;
   }
 
-  // Библиотеки загружены, можно инициализировать приложение
-
-  // Загружаем данные с сервера
   getData(
-    (photos) => {
-      renderThumbnails(photos);
-      initFilters(photos);
+    (photosData) => {
+      renderThumbnails(photosData);
+      initFilters(photosData);
     },
     () => {
       showAlert('Не удалось загрузить данные. Попробуйте обновить страницу');
     }
   );
 
-  // Инициализируем форму загрузки изображения (зависит от Pristine)
   initImageUploadForm();
 }
 
-// Запускаем инициализацию приложения
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(initializeApp, 0);
+    setTimeout(initializeApplication, 0);
   });
 } else {
-  setTimeout(initializeApp, 0);
+  setTimeout(initializeApplication, 0);
 }

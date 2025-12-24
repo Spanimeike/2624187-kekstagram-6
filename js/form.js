@@ -4,23 +4,22 @@ import { resetEffects, initEffects } from './image-effects.js';
 import { sendData } from './api.js';
 import { showSuccessMessage, showErrorMessage } from './messages.js';
 
+const ALLOWED_FILE_TYPES = ['jpg', 'jpeg', 'png'];
+const VALID_HASHTAG_PATTERN = /^#[a-zа-яё0-9]{1,19}$/i;
 const MAX_HASHTAGS = 5;
 const MAX_COMMENT_SIZE = 140;
-const VALID_HASHTAG_PATTERN = /^#[a-zа-яё0-9]{1,19}$/i;
-const ALLOWED_FILE_TYPES = ['jpg', 'jpeg', 'png'];
 
-const uploadForm = document.querySelector('.img-upload__form');
-const imageOverlay = document.querySelector('.img-upload__overlay');
-const fileInput = document.querySelector('#upload-file');
-const closeButton = document.querySelector('#upload-cancel');
 const pageBody = document.body;
+const fileInput = document.querySelector('#upload-file');
+const imageOverlay = document.querySelector('.img-upload__overlay');
 const previewImage = document.querySelector('.img-upload__preview img');
 const effectPreviews = document.querySelectorAll('.effects__preview');
+const uploadForm = document.querySelector('.img-upload__form');
+const closeButton = document.querySelector('#upload-cancel');
 
-let hashtagsInput = null;
 let commentInput = null;
+let hashtagsInput = null;
 let submitButtonElement = null;
-
 let pristineInstance = null;
 
 function locateFormElements() {
@@ -28,12 +27,20 @@ function locateFormElements() {
     return false;
   }
 
-  hashtagsInput = uploadForm.querySelector('.text__hashtags');
   commentInput = uploadForm.querySelector('.text__description');
+  hashtagsInput = uploadForm.querySelector('.text__hashtags');
   submitButtonElement = uploadForm.querySelector('.img-upload__submit');
 
   return hashtagsInput && commentInput && submitButtonElement;
 }
+
+const validateNonEmptyHashtag = (inputValue) => {
+  if (!inputValue) {
+    return true;
+  }
+  const tags = inputValue.trim().split(/\s+/).filter((item) => item.length > 0);
+  return !tags.some((tag) => tag === '#');
+};
 
 const validateHashtagsQuantity = (inputValue) => {
   if (!inputValue) {
@@ -49,14 +56,6 @@ const validateHashtagsStructure = (inputValue) => {
   }
   const tags = inputValue.trim().split(/\s+/).filter((item) => item.length > 0);
   return !tags.some((tag) => !VALID_HASHTAG_PATTERN.test(tag));
-};
-
-const validateNonEmptyHashtag = (inputValue) => {
-  if (!inputValue) {
-    return true;
-  }
-  const tags = inputValue.trim().split(/\s+/).filter((item) => item.length > 0);
-  return !tags.some((tag) => tag === '#');
 };
 
 const validateHashtagsUniqueness = (inputValue) => {

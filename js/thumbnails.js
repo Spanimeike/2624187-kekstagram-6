@@ -5,13 +5,13 @@ const thumbnailTemplate = document.querySelector('#picture').content.querySelect
 
 function generateThumbnail(photoData) {
   const thumbnailElement = thumbnailTemplate.cloneNode(true);
-
   const imageElement = thumbnailElement.querySelector('.picture__img');
-  imageElement.src = photoData.url;
-  imageElement.alt = photoData.description;
 
   thumbnailElement.querySelector('.picture__likes').textContent = photoData.likes;
   thumbnailElement.querySelector('.picture__comments').textContent = photoData.comments.length;
+
+  imageElement.alt = photoData.description;
+  imageElement.src = photoData.url;
 
   thumbnailElement.addEventListener('click', (evt) => {
     evt.preventDefault();
@@ -23,9 +23,8 @@ function generateThumbnail(photoData) {
 
 function renderThumbnails(photosArray) {
   const existingThumbnails = picturesContainerElement.querySelectorAll('.picture');
-  existingThumbnails.forEach((thumbnail) => thumbnail.remove());
-
   const fragment = document.createDocumentFragment();
+  existingThumbnails.forEach((thumbnail) => thumbnail.remove());
 
   photosArray.forEach((photoItem) => {
     const thumbnail = generateThumbnail(photoItem);

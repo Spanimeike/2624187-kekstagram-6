@@ -13,12 +13,12 @@ const FilterType = {
   DISCUSSED: 'filter-discussed',
 };
 
-let activeFilter = FilterType.DEFAULT;
-let photosCollection = [];
-
 const shuffleRandomly = () => Math.random() - 0.5;
 
 const sortByCommentCount = (firstPhoto, secondPhoto) => secondPhoto.comments.length - firstPhoto.comments.length;
+
+let activeFilter = FilterType.DEFAULT;
+let photosCollection = [];
 
 const getFilteredPhotos = () => {
   switch (activeFilter) {

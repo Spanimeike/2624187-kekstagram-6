@@ -16,11 +16,8 @@ function saveLikedState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(likedPhotos));
   } catch (err) {
+    // Ошибка - пропуск
   }
-}
-
-function isPhotoLiked(photoIdentifier) {
-  return Boolean(likedPhotos[photoIdentifier]);
 }
 
 function setPhotoLiked(photoIdentifier, liked) {
@@ -32,6 +29,10 @@ function setPhotoLiked(photoIdentifier, liked) {
   saveLikedState();
 }
 
+function isPhotoLiked(photoIdentifier) {
+  return Boolean(likedPhotos[photoIdentifier]);
+}
+
 function togglePhotoLike(photoIdentifier) {
   const newState = !isPhotoLiked(photoIdentifier);
   setPhotoLiked(photoIdentifier, newState);
@@ -40,4 +41,4 @@ function togglePhotoLike(photoIdentifier) {
 
 loadLikedState();
 
-export { isPhotoLiked, togglePhotoLike };
+export { togglePhotoLike, isPhotoLiked };

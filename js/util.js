@@ -1,3 +1,5 @@
+const ALERT_DISPLAY_TIME = 5000;
+
 export function getRandomInteger(minValue, maxValue) {
   return Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
 }
@@ -32,8 +34,6 @@ export function throttle(callbackFunction, frameDelay) {
     }
   };
 }
-
-const ALERT_DISPLAY_TIME = 5000;
 
 export const showAlert = (alertMessage) => {
   const alertElement = document.createElement('div');

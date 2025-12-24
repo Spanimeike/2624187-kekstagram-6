@@ -1,11 +1,11 @@
-const SCALE_INCREMENT = 25;
-const MIN_SCALE_VALUE = 25;
-const MAX_SCALE_VALUE = 100;
 const DEFAULT_SCALE_VALUE = 100;
+const MAX_SCALE_VALUE = 100;
+const MIN_SCALE_VALUE = 25;
+const SCALE_INCREMENT = 25;
 
 const scaleValueInput = document.querySelector('.scale__control--value');
-const reduceButton = document.querySelector('.scale__control--smaller');
 const increaseButton = document.querySelector('.scale__control--bigger');
+const reduceButton = document.querySelector('.scale__control--smaller');
 const previewImage = document.querySelector('.img-upload__preview img');
 
 const applyScale = (scalePercentage) => {

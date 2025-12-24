@@ -105,11 +105,6 @@ const handleEffectChange = (evt) => {
   handleSliderUpdate();
 };
 
-const resetEffects = () => {
-  selectedEffect = DEFAULT_FILTER;
-  refreshSlider();
-};
-
 const initEffects = () => {
   noUiSlider.create(sliderControl, {
     range: {
@@ -126,4 +121,9 @@ const initEffects = () => {
   sliderControl.noUiSlider.on('update', handleSliderUpdate);
 };
 
-export { resetEffects, initEffects };
+const resetEffects = () => {
+  selectedEffect = DEFAULT_FILTER;
+  refreshSlider();
+};
+
+export { initEffects, resetEffects };

@@ -1,17 +1,17 @@
 import { isPhotoLiked, togglePhotoLike } from './favorites.js';
 
-const fullscreenView = document.querySelector('.big-picture');
+const COMMENTS_BATCH_SIZE = 5;
+
 const pageBody = document.querySelector('body');
+const fullscreenView = document.querySelector('.big-picture');
+const fullscreenImage = fullscreenView.querySelector('.big-picture__img img');
+const imageDescription = fullscreenView.querySelector('.social__caption');
+const loadMoreButton = fullscreenView.querySelector('.comments-loader');
 const closeButtonElement = fullscreenView.querySelector('.big-picture__cancel');
 const commentCounter = fullscreenView.querySelector('.social__comment-count');
-const loadMoreButton = fullscreenView.querySelector('.comments-loader');
 const commentsList = fullscreenView.querySelector('.social__comments');
-const fullscreenImage = fullscreenView.querySelector('.big-picture__img img');
 const likesCounter = fullscreenView.querySelector('.likes-count');
-const imageDescription = fullscreenView.querySelector('.social__caption');
 const likesButton = fullscreenView.querySelector('.social__likes');
-
-const COMMENTS_BATCH_SIZE = 5;
 
 let currentCommentsList = [];
 let displayedCommentsCount = 0;
@@ -64,24 +64,6 @@ function renderCommentsBatch(initialLoad = false) {
   }
 }
 
-function handleLikeClick() {
-  if (!currentPhotoData) {
-    return;
-  }
-
-  const liked = togglePhotoLike(currentPhotoData.id);
-
-  likesButton.classList.toggle('social__likes--active', liked);
-
-  if (liked) {
-    currentPhotoData.likes += 1;
-  } else {
-    currentPhotoData.likes -= 1;
-  }
-
-  likesCounter.textContent = currentPhotoData.likes;
-}
-
 function showBigPicture(photoInfo) {
   currentPhotoData = photoInfo;
 
@@ -119,6 +101,24 @@ function handleEscKeyPress(evt) {
   if (evt.key === 'Escape') {
     closeBigPicture();
   }
+}
+
+function handleLikeClick() {
+  if (!currentPhotoData) {
+    return;
+  }
+
+  const liked = togglePhotoLike(currentPhotoData.id);
+
+  likesButton.classList.toggle('social__likes--active', liked);
+
+  if (liked) {
+    currentPhotoData.likes += 1;
+  } else {
+    currentPhotoData.likes -= 1;
+  }
+
+  likesCounter.textContent = currentPhotoData.likes;
 }
 
 closeButtonElement.addEventListener('click', closeBigPicture);

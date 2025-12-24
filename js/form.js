@@ -34,7 +34,7 @@ function locateFormElements() {
   return hashtagsInput && commentInput && submitButtonElement;
 }
 
-const validateNonEmptyHashtag = function(inputValue) {
+const validateNonEmptyHashtag = (inputValue) => {
   if (!inputValue) {
     return true;
   }
@@ -42,7 +42,7 @@ const validateNonEmptyHashtag = function(inputValue) {
   return !tags.some((tag) => tag === '#');
 };
 
-const validateHashtagsQuantity = function(inputValue) {
+const validateHashtagsQuantity = (inputValue) => {
   if (!inputValue) {
     return true;
   }
@@ -50,7 +50,7 @@ const validateHashtagsQuantity = function(inputValue) {
   return tags.length <= MAX_HASHTAGS;
 };
 
-const validateHashtagsStructure = function(inputValue) {
+const validateHashtagsStructure = (inputValue) => {
   if (!inputValue) {
     return true;
   }
@@ -58,7 +58,7 @@ const validateHashtagsStructure = function(inputValue) {
   return !tags.some((tag) => !VALID_HASHTAG_PATTERN.test(tag));
 };
 
-const validateHashtagsUniqueness = function(inputValue) {
+const validateHashtagsUniqueness = (inputValue) => {
   if (!inputValue) {
     return true;
   }
@@ -69,20 +69,20 @@ const validateHashtagsUniqueness = function(inputValue) {
 
 const validateCommentLength = (inputValue) => !inputValue || inputValue.length <= MAX_COMMENT_SIZE;
 
-const handleFieldKeydown = function(evt) {
+const handleFieldKeydown = (evt) => {
   if (isEscapeKey(evt)) {
     evt.stopPropagation();
   }
 };
 
-const disableSubmitButton = function() {
+const disableSubmitButton = () => {
   if (submitButtonElement) {
     submitButtonElement.disabled = true;
     submitButtonElement.textContent = 'Публикую...';
   }
 };
 
-const enableSubmitButton = function() {
+const enableSubmitButton = () => {
   if (submitButtonElement) {
     submitButtonElement.disabled = false;
     submitButtonElement.textContent = 'Опубликовать';

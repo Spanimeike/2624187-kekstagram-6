@@ -13,7 +13,7 @@ const applyScale = (scalePercentage) => {
   scaleValueInput.value = `${scalePercentage}%`;
 };
 
-const handleReduceClick = () => {
+const handleReduceClick = function() {
   const currentScale = parseInt(scaleValueInput.value, 10);
   let newScale = currentScale - SCALE_INCREMENT;
   if (newScale < MIN_SCALE_VALUE) {
